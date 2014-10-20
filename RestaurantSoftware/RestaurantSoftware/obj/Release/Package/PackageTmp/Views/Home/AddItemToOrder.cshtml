@@ -1,0 +1,63 @@
+﻿@model RestaurantSoftware.Models.OrderLine
+
+@{
+    ViewBag.Title = "Add Item To Order " + ViewBag.orderID;
+}
+
+<h2>Add Item to Order @ViewBag.orderID</h2>
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <hr />
+        <form method="post">
+            <table>
+                <tr><td width="100px"></td><td><input type="text" name="orderID" value="@ViewBag.orderID" readonly hidden="hidden" /></td></tr>
+                <tr>
+                    <td>Item</td>
+                    <td>
+                        <select name="itemID">
+                            <optgroup label="Starters">
+                            @foreach (Item item in ViewBag.StarterItems)
+                            {
+                                <option value=@item.itemID>@item.itemName</option>
+                            }
+                            </optgroup>
+                            <optgroup label="Main Courses">
+                                @foreach (Item item in ViewBag.MainItems)
+                                {
+                                    <option value=@item.itemID>@item.itemName</option>
+                                }
+                            </optgroup>
+                            <optgroup label="Desserts">
+                                @foreach (Item item in ViewBag.DessertItems)
+                                {
+                                    <option value=@item.itemID>@item.itemName</option>
+                                }
+                            </optgroup>
+                            <optgroup label="Drinks">
+                                @foreach (Item item in ViewBag.DrinkItems)
+                                {
+                                    <option value=@item.itemID>@item.itemName</option>
+                                }
+                            </optgroup>
+                        </select>
+                    </td>
+                </tr>
+                <tr><td>Quantity</td><td><input type="number" name="quantity" /></td></tr>
+                <tr><td></td><td><input type="submit" value="Add Item to Order" class="btn btn-default" /></td></tr>
+            </table>
+        </form>
+    </div>
+}
+<div>
+    @{
+        string orderURL = "ManageTable/" + ViewBag.orderID;
+    }
+    @Html.ActionLink("Return to Order", @orderURL)
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

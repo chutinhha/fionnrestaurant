@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "Your Account";
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script language="javascript">
+    function ShowHideDivOnButtonClick(orderID) {
+        $("#" + orderID).toggle("fast");
+
+        return false;
+    }
+</script>
+}
+
+<h2>Hello @ViewBag.Email</h2>
+<div class="col-md-6">
+<h3>Previous Orders</h3>
+    @{
+        foreach (Order myOrder in ViewBag.Orders)
+        {
+            <div class="dhtmlgoodies_question" onclick="javascript: return ShowHideDivOnButtonClick(@myOrder.orderID)">@myOrder.orderStartDate.ToString("dd/MM/yyyy") - €@myOrder.Price</div>
+            <div class="dhtmlgoodies_answer" id="@myOrder.orderID">
+            <div class="dhtmlgoodies_answer_content">
+                <table>
+                <tr><th width="200px">Item</th><th width="100px">Quantity</th><th width="50px">Price</th></tr>
+                @foreach (OrderLine myOrderLine in ViewBag.OrderLines)
+                {
+                    if (myOrderLine.orderID == myOrder.orderID)
+                    {
+                        string itemName = "";
+                        foreach (Item myItem in ViewBag.Items)
+                        {
+                            if (myItem.itemID == myOrderLine.itemID)
+                            {
+                                itemName = myItem.itemName;
+                                break;
+                            }
+                        }
+                        <tr><td>@itemName</td><td>@myOrderLine.quantity</td><td>€@(myOrderLine.price*myOrderLine.quantity)</td></tr>
+                    }
+                }
+                </table>
+            </div>
+            </div>
+        }
+    }
+</div>
+<div class="col-md-6">
+    <h3>Account Details</h3>
+</div>
+@ViewBag.Message

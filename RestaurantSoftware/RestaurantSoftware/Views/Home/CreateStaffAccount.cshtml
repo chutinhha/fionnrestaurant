@@ -1,0 +1,33 @@
+﻿@model RestaurantSoftware.Models.Staff
+
+@{
+    ViewBag.Title = "CreateStaffAccount";
+}
+
+<h2>Create Staff Account</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <hr />
+        <font color="red">@ViewBag.ErrorMessage</font>
+        @Html.ValidationSummary(true)
+        <form method="post">
+            <table>
+                <tr><td width="100px">Staff Name</td><td><input type="text" name="staffName"/></td></tr>
+                <tr><td></td><td align="center"><input type="submit" value="Create Account" class="btn btn-default" /></td></tr>
+            </table>
+        </form>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Return to Index", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

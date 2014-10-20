@@ -1,0 +1,32 @@
+﻿@model IEnumerable<RestaurantSoftware.Models.Item>
+
+@{
+    ViewBag.Title = "Menu";
+}
+
+<h2>Menu</h2>
+<table>
+@{
+    List<ItemType> Categories = ViewBag.ItemTypes;
+}
+@foreach(ItemType itemType in Categories)
+{
+    <tr><th colspan="2"><center>@(itemType.itemTypeName)s</center></th></tr>
+    <tr style="border-bottom: 1px solid black !important;">
+        <th width="250px">
+            Name
+        </th>
+        <th width="80px">
+            Price
+        </th>
+    </tr>
+    foreach (Item item in Model)
+    {
+        if (item.itemType == itemType.itemTypeID)
+        {
+            <tr><td>@item.itemName</td><td>&euro;@item.itemPrice</td></tr>
+        }
+    }
+    <tr><td colspan="2"><br /></td></tr>
+}
+</table>

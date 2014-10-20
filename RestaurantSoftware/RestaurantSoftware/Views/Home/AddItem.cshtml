@@ -1,0 +1,31 @@
+﻿@model RestaurantSoftware.Models.Item
+
+@{
+    ViewBag.Title = "Add New Item to Menu";
+}
+
+<h2>Add New Item to Menu</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true)
+        <table>
+            <tr><td width="100px">Item Name: </td><td>@Html.EditorFor(model => model.itemName) @Html.ValidationMessageFor(model => model.itemName)</td></tr>
+            <tr><td>Item Type: </td><td>@Html.DropDownList("ItemType")</td></tr>
+            <tr><td>Item Price: </td><td>@Html.EditorFor(model => model.itemPrice) @Html.ValidationMessageFor(model => model.itemPrice)</td></tr>
+            <tr><td></td><td><input type="submit" value="Add New Item" class="btn btn-default" /></td></tr>
+        </table>
+        <table>
+            <tr><td></td></tr>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
