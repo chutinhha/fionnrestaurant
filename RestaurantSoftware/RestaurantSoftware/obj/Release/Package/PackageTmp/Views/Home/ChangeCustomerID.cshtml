@@ -1,0 +1,40 @@
+﻿@model RestaurantSoftware.Models.Order
+
+@{
+    ViewBag.Title = "ChangeCustomerID";
+}
+
+<h2>Change Customer on Order @Model.orderID</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <hr />
+        <font color="red">@ViewBag.ErrorMessage</font>
+        <form method="post">
+            <table><tr><td>Customer</td><td><select name="customerID">
+                @foreach (Customer customer in ViewBag.Customers)
+                {
+                    <option value=@customer.customerID>@customer.customerID - @customer.customerEmail</option>
+                }
+                </select></td></tr>
+                <tr><td></td><td><input type="number" hidden="hidden" value=@Model.orderID name="orderID" /></td></tr>
+                <tr><td></td><td align="center"><input type="submit" value="Update" class="btn btn-default" /></td></tr>
+            </table>
+        </form>
+    </div>
+}
+
+<div>
+    @{
+        string orderURL = "ManageTable/" + @Model.orderID;
+    }
+    @Html.ActionLink("Return to Order", @orderURL)
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

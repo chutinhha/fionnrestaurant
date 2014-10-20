@@ -1,0 +1,52 @@
+﻿@model RestaurantSoftware.Models.Order
+
+@{
+    ViewBag.Title = "Open New Order";
+}
+
+<h2>Open New Order</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <hr />
+        <form method="post">
+            <table>
+                <tr>
+                    <td width="100px">Staff Member</td>
+                    <td>
+                        <select name="staffID">
+                            @foreach (Staff staff in ViewBag.Staff)
+                            {
+                                <option value=@staff.staffID>@staff.staffName</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Customer ID</td>
+                    <td>
+                        <select name="customerID">
+                            <option value="">Not Provided</option>
+                            @foreach (Customer customer in ViewBag.Customers)
+                            {
+                                <option value="@customer.customerID">@customer.customerID - @customer.customerEmail</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr><td>Points</td><td><select name="pointsChoice"><option value='Save'>Save</option><option value='Spend'>Spend</option></select></td></tr>
+                <tr><td><input type="number" value="0" hidden="hidden" name="receiptGenerated" /></td><td></td></tr>
+                <tr><td><input type="number" value="0" hidden="hidden" name="isPaid" /></td><td></td></tr>
+                <tr><td></td><td><input type="submit" value="Create New Order" class="btn btn-default" /></td></tr>
+            </table>
+        </form>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

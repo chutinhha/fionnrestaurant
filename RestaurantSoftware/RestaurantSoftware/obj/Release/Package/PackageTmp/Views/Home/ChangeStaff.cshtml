@@ -1,0 +1,53 @@
+﻿@model RestaurantSoftware.Models.Order
+
+@{
+    ViewBag.Title = "Change Staff on Order " + Model.orderID;
+}
+
+<h2>Change Staff on Order @Model.orderID</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <hr />
+
+        <table>
+            <tr><td width="100px"></td><td><input type="number" name="orderID" hidden="hidden" value=@Model.orderID /></td></tr>
+            <tr>
+                <td>Staff Member</td><td>
+                <select name="staffID">
+                    @foreach (Staff staff in ViewBag.allStaff)
+                    {
+                        if (staff.staffID != Model.staffID)
+                        {
+                            <option value=@staff.staffID>@staff.staffName</option>
+                        }
+                        else
+                        {
+                            <option value=@staff.staffID selected="selected">@staff.staffName</option>
+                        }
+                    }
+                </select>
+                </td>
+            </tr>
+            <tr><td></td><td><input type="number" name="customerID" hidden="hidden" value=@Model.customerID /></td></tr>
+            <tr><td></td><td><input type="time" name="orderStartDate" hidden="hidden" value="@Model.orderStartDate" /></td></tr>
+            <tr><td></td><td><input type="time" name="orderEndDate" hidden="hidden" value="@null" /></td></tr>
+            <tr><td></td><td><input type="number" name="generatedReceipt" hidden="hidden" value=@Model.generatedReceipt /></td></tr>
+            <tr><td></td><td><input type="number" name="isPaid" hidden="hidden" value=@Model.isPaid /></td></tr>
+            <tr><td></td><td><input type="text" name="pointsChoice" hidden="hidden" value="@Model.pointsChoice" /></td></tr>
+            <tr><td></td><td><input type="submit" value="Update Waiter" class="btn btn-default" /></td></tr>
+        </table>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Return to Order", "ManageTable/" + Model.orderID)
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,102 @@
+﻿<script>
+    function printDiv() {
+        var printContents = document.getElementById("print").innerHTML;
+        var something = document.getElementById("print").innerHTML;
+        var originalContents = document.body.innerHTML;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    }
+</script>
+
+@{
+    Layout = "";
+}
+@model RestaurantSoftware.Models.Order
+
+@{
+    ViewBag.Title = "GenerateHTMLReceipt";
+    double totalPrice = 0;
+}
+<div id="print">
+    <table width="300px">
+        <tr><td width="120px"><u>Date</u></td><td>@Model.orderStartDate.ToString("dd/MM/yy HH:mm")</td></tr>
+        <tr><td><u>Order ID</u></td><td>@Model.orderID</td></tr>
+        <tr><td><u>Staff Member</u></td><td>@ViewBag.staffName</td></tr>
+        <tr><td><u>Customer</u></td><td>@ViewBag.CustomerEmail</td></tr>
+    </table>
+    <br />
+    <table>
+        <tr><td width='130px'><b>Item</b></td><td width='60px'><b>Quantity</b></td><td width='60px' align="right"><b>Price</b></td></tr>
+        @foreach (OrderLine orderLine in ViewBag.allOrderLines)
+        {
+            foreach (Item item in ViewBag.allItems)
+            {
+                if (orderLine.itemID == item.itemID)
+                {
+                    double linePrice = (double)(item.itemPrice * orderLine.quantity);
+                    totalPrice = totalPrice + linePrice;
+                    <tr><td><font size="2">@item.itemName</font></td><td valign ="top">@orderLine.quantity</td><td align="right" valign="top">&euro;@linePrice.ToString("0.00")</td></tr>
+                }
+            }
+        }
+        <tr><td></td><td>Total</td><td style="border-top:solid 1px #000;" align="right">&euro;@totalPrice.ToString("0.00")</td></tr>
+        @{
+            int pointsEarned = (int)Math.Floor(totalPrice*10);
+            int currentPoints = ViewBag.CustomerCurrentPoints;
+            int endBalance = pointsEarned + currentPoints;
+            double savings = 0;
+            if (Model.pointsChoice == "Spend")
+            {
+                if (Math.Ceiling(totalPrice*100) >= endBalance)
+                {
+                    totalPrice = totalPrice - (endBalance / 100.00);
+                    savings = endBalance / 100.00;
+                    endBalance = 0;
+                }
+                else
+                {
+                    savings = totalPrice;
+                    endBalance = endBalance - (int)(totalPrice * 100);
+                    totalPrice = 0;
+                }
+            }
+        }
+        @if (Model.pointsChoice == "Spend")
+        {
+            <tr><td></td><td>Savings</td><td align="right">&euro;@savings.ToString("0.00")</td></tr>
+            <tr><td></td><td>Total</td><td style="border-top:solid 1px #000;" align="right">&euro;@totalPrice.ToString("0.00")</td></tr>
+        }
+    </table>
+    <br />
+        @if(ViewBag.CustomerID != null)
+        {
+            if (Model.pointsChoice == "Spend")
+            {
+                <div style="width:300px;">
+                    You saved &euro;@savings.ToString("0.00") on your meal today.
+                    <table>
+                        <tr><td width="100px">Old Balance</td><td>@ViewBag.CustomerCurrentPoints points</td></tr>
+                        <tr><td>New Balance</td><td>@endBalance points</td></tr>
+                    </table>
+                </div>
+            }
+            else if (Model.pointsChoice == "Save")
+            {
+                <div style="width:300px;">
+                    You earned @pointsEarned loyalty points, worth &euro;@((pointsEarned/100.00).ToString("0.00")).<br />
+                    <table>
+                        <tr><td width="100px">Old Balance</td><td>@ViewBag.CustomerCurrentPoints points</td></tr>
+                        <tr><td>New Balance</td><td>@endBalance points</td></tr>
+                    </table>
+                </div>   
+            }
+        }
+        else
+        {
+            <div style="width:300px;">You could have earned @pointsEarned loyalty points, worth &euro;@((pointsEarned/100.00).ToString("0.00")) if you were signed up for our loyalty scheme.</div>
+        }
+
+</div>
+
+<input type='button' value='Print Receipt' onclick='printDiv();' />
