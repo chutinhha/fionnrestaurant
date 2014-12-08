@@ -1,0 +1,193 @@
+﻿@model RestaurantSoftware.Models.Order
+
+@{
+    ViewBag.Title = "Table " + Model.orderID;
+}
+
+@{
+    <script>
+        function quantityChange(orderLineID, currentQuantity) {
+            var quantity = prompt("Item Quantity", currentQuantity);
+            var allow = true;
+            if (quantity == null) {
+                return false;
+            }
+            if (quantity <= 0 || isNaN(quantity)) {
+                alert("Quantity must be a positive value");
+                allow = false;
+            }
+            if (quantity >= 5) {
+                allow = confirm("The quantity provided seems quite high. Is it correct?");
+            }
+            if (allow) {
+                window.location.href = '../ChangeOrderLineQuantity?id=' + orderLineID + '&quantity=' + quantity;
+            }
+        }
+    </script>
+}
+
+<div class="col-md-12">
+    <font color="red"><br /><center>@ViewBag.ErrorMessage</center><br /></font>
+    <div class="col-md-4">
+        <h4>Order Details (@Model.orderID)</h4>
+        <table width="90%">
+            <tr><td width="40%">Staff Member</td><td width="60%">@ViewBag.StaffName @if(Model.generatedReceipt == 0 && ViewBag.StaffType == "SystemAdmin"){<text>(</text>@Html.ActionLink("Change","ChangeStaff/" + Model.orderID,"Home")<text>)</text>}</td></tr>
+            <tr><td>Customer ID</td><td>
+                @if (Model.customerID == null)
+                {
+                    <text>Not Provided!</text>
+                }
+                else
+                {
+                    @Model.customerID
+                }
+                @if (Model.generatedReceipt == 0)
+                {
+                    <text>(@Html.ActionLink("Change", "ChangeCustomerID/" + @Model.orderID, "Home"))</text>
+                } 
+            </td></tr>
+            @if (Model.customerID != null)
+            {
+                <text><tr><td>Customer Email</td><td>@ViewBag.customerEmail</td></tr></text>
+            }
+            <tr><td>Order Time</td><td>@Model.orderStartDate.ToString("dd/MM/yy - HH:mm")</td></tr>
+            <tr><td>Order Status</td><td>
+                @if (Model.orderEndDate == null)
+                {
+                    if (Model.generatedReceipt == 0 && Model.isPaid == 0)
+                    {
+                        <text>Ordering</text>
+                    }
+                    else if (Model.generatedReceipt == 1 && Model.isPaid == 0)
+                    {
+                        <text>Receipt Printed</text>
+                    }
+                    else if (Model.generatedReceipt == 1 && Model.isPaid == 1)
+                    {
+                        <text>Paid</text>
+                    }
+                }
+                else
+                {
+                    <text>Closed</text>
+                }
+                </td></tr>
+            @if (Model.customerID != null)
+            {
+                <tr><td>Points</td><td>@Model.pointsChoice 
+                    @if(Model.generatedReceipt == 0)
+                    {
+                        <text>(@Html.ActionLink("Change", "ChangePointsSetting/" + Model.orderID, "Home"))</text>
+                    }
+                </td></tr>
+                <tr><td>Points Balance</td><td>@ViewBag.PointsBalance</td></tr>
+            }
+        </table>
+    </div>
+    <div class="col-md-8">
+        <h4>Items Ordered</h4>
+        @if(ViewBag.OrderItems.Count > 0){
+        double totalPrice = 0;
+        <table width="100%">
+        @{
+            List<Item> myItems = ViewBag.Items;
+            List<OrderLine> myOrderLines = ViewBag.OrderItems;
+            int foodCount = 0;
+            int drinkCount = 0;
+            foreach (Item myItem in myItems)
+            {
+                foreach (OrderLine myOrderLine in myOrderLines)
+                {
+                    if (myItem.itemID == myOrderLine.itemID)
+                    {
+                        if (myItem.itemType == 4)
+                        {
+                            drinkCount++;
+                        }
+                        else
+                        {
+                            foodCount++;
+                        }
+                    }
+                }
+            }
+        }
+        @if (foodCount > 0)
+        {
+            <tr><th colspan="4">Food</th></tr>
+            <tr><th width="40%">Item Name</th><th width="15%">Quantity</th><td width="15%" align="right"><b>Unit Price</b></td><td width="30%" align="right"><b>Total Price</b></td></tr>
+        }
+        @foreach (OrderLine orderLine in myOrderLines)
+        {
+            foreach(Item item in myItems)
+            {
+                if (item.itemType != 4)
+                {
+                    if (item.itemID == orderLine.itemID)
+                    {
+                        double linePrice = Convert.ToDouble(item.itemPrice*orderLine.quantity);
+                        //<tr><td>@item.itemName @if(Model.generatedReceipt == 0){<text>(@Html.ActionLink("Remove", "DeleteOrderLine/" + orderLine.id,"Home"))</text>}</td><td>@orderLine.quantity @if(Model.generatedReceipt == 0){<text>(@Html.ActionLink("Change", "ChangeOrderLineQuantity/" + orderLine.id, "Home"))</text>}</td><td align="right">€@item.itemPrice</td><td align="right">€@linePrice.ToString("0.00")</td></tr>
+                        <tr><td>@item.itemName @if(Model.generatedReceipt == 0){<text>(@Html.ActionLink("Remove", "DeleteOrderLine/" + orderLine.id,"Home"))</text>}</td><td>@orderLine.quantity @if(Model.generatedReceipt == 0){<text>(<a href="javascript:quantityChange(@orderLine.id, @orderLine.quantity)">Change</a>)</text>}</td><td align="right">€@item.itemPrice</td><td align="right">€@linePrice.ToString("0.00")</td></tr>
+                        totalPrice = totalPrice + linePrice;
+                    }
+                }
+            }
+        }
+        @if (drinkCount > 0 && foodCount > 0)
+        {
+            <tr><td><br /></td></tr>
+        }
+        @if(drinkCount > 0)
+        {
+            <tr><th colspan="4">Drink</th></tr>
+            <tr><th width="40%">Item Name</th><th width="15%">Quantity</th><td width="15%" align="right"><b>Unit Price</b></td><td width="30%" align="right"><b>Total Price</b></td></tr>
+        }
+        @foreach (OrderLine orderLine in myOrderLines)
+        {
+            foreach (Item item in myItems)
+            {
+                if (item.itemType == 4)
+                {
+                    if (item.itemID == orderLine.itemID)
+                    {
+                        double linePrice = Convert.ToDouble(item.itemPrice*orderLine.quantity);
+                        <tr><td>@item.itemName @if(Model.generatedReceipt == 0){<text>(@Html.ActionLink("Remove", "DeleteOrderLine/" + orderLine.id,"Home"))</text>}</td><td>@orderLine.quantity @if(Model.generatedReceipt == 0){<text>(<a href="javascript:quantityChange(@orderLine.id, @orderLine.quantity)">Change</a>)</text>}</td><td align="right">€@item.itemPrice</td><td align="right">€@linePrice.ToString("0.00")</td></tr>
+                        totalPrice = totalPrice + linePrice;
+                    }
+                }
+            }
+        }
+        <tr style="border-top: 1px solid #000"><td>Total</td><td colspan="2"></td><td align="right">€@totalPrice.ToString("0.00")</td></tr>
+        <tr><td colspan="2"></td><td>Points Earned</td><td align="right">@Math.Floor(totalPrice * 10)</td></tr>
+        </table>
+        }
+        @{
+            List<OrderLine> theOrderLines = ViewBag.OrderItems;
+        }
+        @if (Model.generatedReceipt == 0)
+        {
+            @Html.ActionLink("Add Item to Order", "AddItemToOrder/" + @Model.orderID, "Home")
+            <text>|</text>
+        }
+        @if(Model.isPaid == 0)
+        {
+            if (Model.generatedReceipt == 0 && theOrderLines.Count > 0)
+            { 
+                @Html.ActionLink("Generate Receipt", "GenerateHTMLReceipt/" + @Model.orderID, "Home", null, new { target = "_blank" })
+            }
+            else
+            {
+                if (Model.generatedReceipt == 1)
+                {
+                    @Html.ActionLink("Discard Receipt", "DiscardReceipt/" + @Model.orderID, "Home");
+                    <text>|</text>
+                    @Html.ActionLink("Mark as Paid", "PayOrder/" + @Model.orderID, "Home")
+                }
+            }
+        }
+        @if ((Model.isPaid == 1 && Model.orderEndDate == null) || theOrderLines.Count == 0)
+        {
+            @Html.ActionLink("Close Order", "CloseTable/" + @Model.orderID, "Home");
+        }
+    </div>
+</div>

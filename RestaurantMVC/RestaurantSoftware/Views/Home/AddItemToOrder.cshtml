@@ -1,0 +1,99 @@
+﻿@model RestaurantSoftware.Models.OrderLine
+@{
+    <script>
+    function myFunction(tableID, itemID) {
+    var quantity = prompt("Input item quantity:", "1");
+    var isNumeric = isNaN(quantity);
+    if (quantity != null || quantity == "") {
+        if (!isNumeric) {
+            if (quantity <= 0) {
+                alert("Quantity must be greater than 0!");
+            }
+            else {
+                var confirmation = true;
+                if (quantity > 4) {
+                    confirmation = confirm("The quantity of items ordered seems high. Is " + quantity + " correct?");
+                }
+                if (confirmation) {
+                    window.location.href = '../AddItemToOrderJS?orderID=' + tableID + '&itemID=' + itemID + '&quantity=' + quantity;
+                    alert(myString);
+                }
+            }
+        }
+        else {
+            alert("Quantity is not numeric!");
+        }
+    }
+}</script>
+}
+@{
+    ViewBag.Title = "Add Item To Order " + ViewBag.orderID;
+}
+
+<h2>Add Item to Order @ViewBag.orderID</h2>
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="col-md-12">
+        <hr />
+        <div class="col-custom-12">
+            <center><h4>Starters</h4></center>
+            @foreach (Item item in ViewBag.StarterItems)
+            {
+                if (item.imageurl == "" || item.imageurl == null)
+                {
+                    item.imageurl = "/Content/Images/NoImage.jpg";
+                }
+                <div class="col-custom-20" style="height:180px; cursor:pointer; border-radius:10px; border-style:solid; border-width:1px; margin-left:10px; margin-bottom:10px;" onclick="javascript:myFunction(@ViewBag.orderID, @item.itemID);" onmouseover="this.style.background = 'green';" onmouseout="this.style.background = 'transparent';"><center><img class="itemSelect" src="@item.imageurl" style="border-radius: 50%; background-color: white;" alt="@item.itemName"><br />@if (item.itemName.Length > 20){<marquee scrollamount="3">@item.itemName</marquee>}else{<text>@item.itemName</text>}</center></div>
+            }
+        </div>
+        <div class="col-custom-12"><br /></div>
+        <div class="col-custom-12">
+            <center><h4>Main Courses</h4></center>
+            @foreach (Item item in ViewBag.MainItems)
+            {
+                if (item.imageurl == "" || item.imageurl == null)
+                {
+                    item.imageurl = "/Content/Images/NoImage.jpg";
+                }
+                <div class="col-custom-20" style="height:180px; cursor:pointer; border-radius:10px; border-style:solid; border-width:1px; margin-left:10px; margin-bottom:10px;" onclick="javascript:myFunction(@ViewBag.orderID, @item.itemID);" onmouseover="this.style.background = 'green';" onmouseout="this.style.background = 'transparent';"><center><img class="itemSelect" src="@item.imageurl" style="border-radius: 50%; background-color: white;" alt="@item.itemName"><br />@if (item.itemName.Length > 20){<marquee scrollamount="3">@item.itemName</marquee>}else{<text>@item.itemName</text>}</center></div>
+            }
+        </div>
+        <div class="col-custom-12"><br /></div>
+        <div class="col-custom-12">
+            <center><h4>Desserts</h4></center>
+            @foreach (Item item in ViewBag.DessertItems)
+            {
+                if (item.imageurl == "" || item.imageurl == null)
+                {
+                    item.imageurl = "/Content/Images/NoImage.jpg";
+                }
+                <div class="col-custom-20" style="height:180px; cursor:pointer; border-radius:10px; border-style:solid; border-width:1px; margin-left:10px; margin-bottom:10px;" onclick="javascript:myFunction(@ViewBag.orderID, @item.itemID);" onmouseover="this.style.background = 'green';" onmouseout="this.style.background = 'transparent';"><center><img class="itemSelect" src="@item.imageurl" style="border-radius: 50%; background-color: white;" alt="@item.itemName"><br />@if (item.itemName.Length > 20){<marquee scrollamount="3">@item.itemName</marquee>}else{<text>@item.itemName</text>}</center></div>
+            }
+        </div>
+        <div class="col-custom-12"><br /></div>
+        <div class="col-custom-12">
+            <center><h4>Drinks</h4></center>
+            @foreach (Item item in ViewBag.DrinkItems)
+            {
+                if (item.imageurl == "" || item.imageurl == null)
+                {
+                    item.imageurl = "/Content/Images/NoImage.jpg";
+                }
+                <div class="col-custom-20" style="height:180px; cursor:pointer; border-radius:10px; border-style:solid; border-width:1px; margin-left:10px; margin-bottom:10px;" onclick="javascript:myFunction(@ViewBag.orderID, @item.itemID);" onmouseover="this.style.background = 'green';" onmouseout="this.style.background = 'transparent';"><center><img class="itemSelect" src="@item.imageurl" style="border-radius: 50%; background-color: white;" alt="@item.itemName"><br />@if (item.itemName.Length > 20){<marquee scrollamount="3">@item.itemName</marquee>}else{<text>@item.itemName</text>}</center></div>
+            }
+        </div>
+        <br/>
+    </div>
+}
+<div class="col-custom-12">
+    @{
+        string orderURL = "ManageTable/" + ViewBag.orderID;
+    }
+    @Html.ActionLink("Return to Order", @orderURL)
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

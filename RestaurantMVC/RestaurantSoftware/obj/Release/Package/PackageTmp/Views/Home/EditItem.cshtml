@@ -1,0 +1,53 @@
+﻿@model RestaurantSoftware.Models.Item
+
+@{
+    ViewBag.Title = "Edit " + @Model.itemName;
+}
+@{
+    <script>
+        function validation() {
+            var itemName = document.getElementById("itemName").value;
+            var itemPrice = document.getElementById("itemPrice").value;
+            if (itemName == null || itemName == "") {
+                alert("You must enter an item name.");
+                return false;
+            }
+            if (itemPrice <= 0) {
+                alert("The price must be greater than €0.00");
+                return false;
+            }
+            if (itemPrice < 1) {
+                return confirm("The price you've entered seems low. Is it accurate?");
+            }
+            if (itemPrice > 30) {
+                return confirm("The price you've entered seems high. Is it accurate?");
+            }
+            return true;
+        }
+    </script>
+}
+<h2>Edit @Model.itemName</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.itemID)
+
+        <table>
+            <tr><td width="100px">Item Name:</td><td><input type="text" name="itemName" id="itemName" value="@Model.itemName"/></td></tr>
+            <tr><td>Item Type:</td><td>@Html.DropDownList("ItemType")</td></tr>
+            <tr><td>Item Price:</td><td><input type="number" name="itemPrice" id="itemPrice" value="@Model.itemPrice" /></td></tr>
+            <tr><td></td><td><input type="hidden" name="imageurl" value="@Model.imageurl" /></td></tr>
+            <tr><td></td><td><input type="submit" value="Save Changes" onclick="return validation()" class="btn btn-default" /></td></tr>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

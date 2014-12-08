@@ -1,0 +1,100 @@
+﻿@model RestaurantSoftware.Models.Item
+
+@{
+    ViewBag.Title = "Add New Item to Menu";
+}
+
+@{
+    <script>
+        function chooseImage(imageurl, divID)
+        {
+            var imageDivs = document.getElementsByClassName("col-custom-20");
+            if (imageDivs.length > 0)
+            {
+                for(i=0;i<imageDivs.length;i++)
+                {
+                    if (i == divID)
+                    {
+                        document.getElementById(i).style.backgroundColor = 'forestgreen';
+                    }
+                    else
+                    {
+                        document.getElementById(i).style.backgroundColor = 'transparent';
+                    }
+                }
+            }
+            document.getElementsByName("imageurl")[0].value = imageurl;
+        }
+
+        function SubmitForm() {
+            var itemName = document.getElementById("itemName").value;
+            var itemPrice = document.getElementById("itemPrice").value;
+            var itemType = document.getElementById("ItemType").value;
+            var itemImage = document.getElementsByName("imageurl")[0].value;
+            if (itemName == "" || itemName == null) {
+                alert("The name you have entered is invalid!");
+                return false;
+            }
+            if (itemPrice <= 0 || isNaN(itemPrice)) {
+                alert("The price entered is invalid.");
+                return false;
+            }
+            if (itemPrice < 1.00) {
+                var priceConfirm = confirm("The item price seems low, is this correct?");
+                if (!priceConfirm) {
+                    return false;
+                }
+            }
+            if (itemPrice > 30.00) {
+                var priceConfirm = confirm("The item price seems high, is this correct?");
+                if (!priceConfirm) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    </script>
+}
+<h2>Add New Item to Menu</h2>
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="col-md-12">
+        <hr />
+        @Html.ValidationSummary(true)
+        <center><font color="red">@ViewBag.ErrorMessage</font></center>
+        <form method="post">
+        <table>
+            <tr><td width="100px">Item Name: </td><td><input type="text" name="itemName" id="itemName"/></td></tr>
+            <tr><td>Item Type: </td><td>@Html.DropDownList("ItemType")</td></tr>
+            <tr><td>Item Price: </td><td><input type="number" name="itemPrice" id="itemPrice"/></td></tr>
+            <tr><td></td><td><input type="hidden" name="imageurl" value="/Content/Images/NoImage.jpg"/></td></tr>
+            <tr><td colspan="2">
+                @{
+                    ViewBag.Images = Directory.EnumerateFiles(Server.MapPath("/Content/Images")).Select(fn => "/Content/Images/" + Path.GetFileName(fn));
+                    int count = 0;
+                    foreach (string file in ViewBag.Images)
+                    {
+                        if (file == "/Content/Images/NoImage.jpg")
+                        {
+                            <div class="col-custom-20" id="@count" style="background-color:forestgreen; border-radius:5%;"><a href="javascript:chooseImage('@file',@count);"><center><img src="@file" class="itemSelect" style="border-radius: 50%; background-color: white;"/></center></a></div>
+                        }
+                        else
+                        {
+                            <div class="col-custom-20" id="@count" style="background-color:transparent; border-radius:5%;"><a href="javascript:chooseImage('@file',@count);"><center><img src="@file" class="itemSelect" style="border-radius: 50%; background-color: white;"/></center></a></div>
+                        }
+                        count++;
+                    }
+                }
+            </td></tr>
+            <tr><td></td><td><input type="submit" value="Add New Item" class="btn btn-default" onclick="return SubmitForm()"/></td></tr>
+        </table>
+            </form>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
