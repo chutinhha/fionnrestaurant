@@ -1,0 +1,15 @@
+﻿
+@{
+    ViewBag.Title = "Customer Login";
+}
+
+<h2>Customer Login</h2>
+<hr />
+<center><font color="red">@ViewBag.Message</font></center>
+<form method="post">
+    <table>
+        <tr><td width="100px">Email</td><td><input type="email" name="customerEmail" /></td></tr>
+        <tr><td>Password</td><td><input type="password" name="customerPassword" /></td></tr>
+        <tr><td></td><td align="center"><input type="submit" value="Log In!" /></td></tr>
+    </table>
+</form>

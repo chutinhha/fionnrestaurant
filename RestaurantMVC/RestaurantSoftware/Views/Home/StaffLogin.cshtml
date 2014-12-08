@@ -1,0 +1,15 @@
+﻿@{
+    ViewBag.Title = "Staff Login";
+}
+
+<h2>Staff Login</h2>
+<hr />
+<center><font color="red">@ViewBag.Message</font></center>
+<form method="post">
+    <table>
+        <tr><td width="100px">Name</td><td><input type="text" name="staffName" /></td></tr>
+        <tr><td>Password</td><td><input type="password" name="staffPassword" /></td></tr>
+        <tr><td><input type="radio" name="accountType" value="Staff" checked />Staff</td><td><input type="radio" name="accountType" value="Admin" />Admin</td></tr>
+        <tr><td></td><td align="center"><input type="submit" value="Log In" /></td></tr>
+    </table>
+</form>

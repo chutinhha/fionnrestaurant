@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    @*/<meta name="viewport" content="width=device-width, initial-scale=1.0">/*@
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script>
+        if (top.location != location) {
+            top.location = self.location;
+        }
+    </script>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Home", "Index", "Home", null, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("View Menu", "ViewMenu", "Home")</li>
+                    @{
+                        HttpCookie myCookie = Request.Cookies["UserSettings"];
+                        if (myCookie == default(HttpCookie))
+                        {
+                            <li>@Html.ActionLink("Create Customer Account","CreateCustomerAccount/","Home")</li>
+                            <li>@Html.ActionLink("Customer Login","CustomerLogin/","Home")</li>
+                        }
+                        else
+                        {
+                            if (myCookie["Role"] == "Customer")
+                            {
+                                <li>@Html.ActionLink("View Account","CustomerAccount/","Home")</li>
+                            }
+                            else if(myCookie["Role"] == "Staff")
+                            {
+                                <li>@Html.ActionLink("Open Order","OpenTable/","Home")</li>
+                            }
+                            else if (myCookie["Role"] == "SystemAdmin")
+                            {
+                                <li>@Html.ActionLink("Add Item","AddItem/","Home")</li>
+                                <li>@Html.ActionLink("Open Order","OpenTable/","Home")</li>
+                                <li>@Html.ActionLink("Create Staff Account", "CreateStaffAccount/", "Home")</li>
+                                <li>@Html.ActionLink("News","News/", "Home")</li>
+                            }
+                        }
+                    }
+                </ul>
+                @{
+                    myCookie = Request.Cookies["UserSettings"];
+                    if (myCookie == default(HttpCookie))
+                    {
+                        <ul class="nav navbar-nav navbar-right">
+                        <li>@Html.ActionLink("Staff Login", "StaffLogin", "Home")</li>
+                        </ul>
+                    }
+                    else
+                    {
+                        <ul class="nav navbar-nav navbar-right">
+                        <li>@Html.ActionLink("Log Out","LogOut","Home")</li>
+                        </ul>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="container body-content" >
+        <br />
+        @RenderBody()
+        <footer></footer>
+        <hr />
+        <footer>
+            <center><p>Restaurant 42 &copy; -  @DateTime.Now.Year</p></center>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

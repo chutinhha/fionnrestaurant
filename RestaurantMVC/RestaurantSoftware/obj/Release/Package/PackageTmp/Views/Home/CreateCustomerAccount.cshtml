@@ -1,0 +1,34 @@
+﻿@model RestaurantSoftware.Models.Customer
+
+@{
+    ViewBag.Title = "Create a new customer account";
+}
+<h2>Create Customer Account</h2>
+
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <hr />
+        <center><font color="red">@ViewBag.ErrorMessage</font></center>
+        <form method="post">
+            <table>
+                <tr><td width="100px">Email</td><td><input type="email" name="customerEmail" />@Html.ValidationMessageFor(x => x.customerEmail)</td></tr>
+                <tr><td>Password</td><td><input type="password" name="customerPass" />@Html.ValidationMessageFor(x => x.customerPass)</td></tr>
+                <tr><td>Address</td><td><input type="text" name="customerAddress" />@Html.ValidationMessageFor(x => x.customerAddress)</td></tr>
+                <tr><td>Phone</td><td><input type="text" name="customerPhone" />@Html.ValidationMessageFor(x => x.customerPhone)</td></tr>
+                <tr><td></td><td><input type="number" value="0" name="customerLoyaltyPoints" hidden="hidden" readonly /></td></tr>
+                <tr><td></td><td align="center"><input type="submit" value="Create Account" class="btn btn-default" /></td></tr>
+            </table>
+        </form>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Return to Index", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

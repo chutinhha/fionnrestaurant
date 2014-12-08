@@ -1,0 +1,38 @@
+﻿@model RestaurantSoftware.Models.OrderLine
+
+@{
+    ViewBag.Title = "Update Item on Order " + @Model.orderID;
+}
+
+<h2>Update Item on Order @Model.orderID</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <hr />
+
+        <form method="post">
+            <table>
+                <tr><td></td><td><input type="number" name="id" value="@Model.id" readonly hidden="hidden" /></td></tr>
+                <tr><td width="100px"></td><td><input type="number" name="orderID" value="@Model.orderID" readonly hidden="hidden"/></td></tr>
+                <tr><td>Item</td><td><input type="text" value="@ViewBag.itemName" readonly /></td></tr>
+                <tr><td></td><td><input type="text" name="itemID" value="@Model.itemID" readonly hidden="hidden" /></td></tr>
+                <tr><td>Quantity</td><td><input type="number" name="quantity" value="@Model.quantity" /></td></tr>
+                <tr><td></td><td><input type="submit" value="Update Order!" class="btn btn-default" /></td></tr>
+            </table>
+        </form>
+
+    </div>
+}
+<div>
+    @{
+        string orderURL = "ManageTable/" + @Model.orderID;
+    }
+    @Html.ActionLink("Return to Order", @orderURL)
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

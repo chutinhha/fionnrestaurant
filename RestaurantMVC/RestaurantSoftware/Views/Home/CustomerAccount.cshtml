@@ -1,0 +1,150 @@
+﻿@{
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
+    ViewBag.Title = "Your Account";
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script language="javascript">
+    function ShowHideDivOnButtonClick(orderID) {
+        $("#" + orderID).toggle("fast");
+
+        return false;
+    }
+    function performValidation(currentPassword, currentEmail) {
+        var customerPhone = document.getElementById('customerPhone').value;
+        if (customerPhone.length < 5) {
+            alert("Your phone number is too short.");
+            return false;
+        }
+        if (isNaN(customerPhone) || customerPhone<=0) {
+            alert("Phone number is not valid, contains unrecognised characters. Please input only numbers.");
+            return false;
+        }
+        var customerAddress = document.getElementById('customerAddress').value;
+        if (customerAddress.length < 5)
+        {
+            alert("Your address is too short.");
+            return false;
+        }
+        var customerEmail = document.getElementById('customerEmail').value;
+        var atpos = customerEmail.indexOf("@@");
+        var dotpos = customerEmail.lastIndexOf(".");
+        if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= customerEmail.length) {
+            alert("Not a valid e-mail address");
+            return false;
+        }
+        var password = document.getElementById("password").value;
+        var passhash = CryptoJS.MD5(password);
+        if (passhash == currentPassword) {
+            if (customerEmail != currentEmail) {
+                return confirm('Please note, you will need to log in with your new email address in future.');
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            alert("The password you entered does not match the one on file. You can not change your details without your current password.");
+            return false;
+        }
+        return false;
+    }
+    function performPasswordCheck(currentPass) {
+        var oldPass = document.getElementById("currentPassword").value;
+        var oldPassHash = CryptoJS.MD5(oldPass);
+        if (oldPassHash != currentPass) {
+            alert("The password provided does not match the password on file for your account.")
+            return false;
+        }
+        var newPass1 = document.getElementById("newPass1").value;
+        var newPass2 = document.getElementById("newPass2").value;
+        if (newPass1.length < 6) {
+            alert("The length of your new password is insufficient. It must be at least 6 characters.");
+            return false;
+        }
+        if (newPass1 != newPass2) {
+            alert("The values entered in the new password fields did not match each other.");
+            return false;
+        }
+        if (oldPass == newPass1) {
+            alert("Your new password is identical to your old password.");
+            return false;
+        }
+        return true;
+    }
+    function restoreDetails(email, address, phone) {
+        document.getElementById('customerEmail').value = email;
+        document.getElementById('customerAddress').value = address;
+        document.getElementById('customerPhone').value = phone;
+        document.getElementById('password').value = "";
+        return false;
+    }
+    </script>
+}
+@{
+    string currentEmail = ViewBag.Email;
+    string currentPassword = ViewBag.Password;
+    string currentAddress = ViewBag.Address;
+    string currentPhone = ViewBag.Phone;
+    int customerPoints = ViewBag.Points;
+}
+
+<h2>Hello @ViewBag.Email</h2>
+<h4>You have @customerPoints loyalty points</h4>
+@if (ViewBag.ErrorMessage != "")
+{
+    string message = ViewBag.ErrorMessage;
+    <center><font color="blue">@message</font></center>
+}
+<div class="col-md-6">
+<h3>Previous Orders</h3>
+    @{
+        foreach (Order myOrder in ViewBag.Orders)
+        {
+            <div class="dhtmlgoodies_question" onclick="javascript: return ShowHideDivOnButtonClick(@myOrder.orderID)">@myOrder.orderStartDate.ToString("dd/MM/yyyy") - €@myOrder.Price</div>
+            <div class="dhtmlgoodies_answer" id="@myOrder.orderID">
+            <div class="dhtmlgoodies_answer_content">
+                <table>
+                <tr><th width="200px">Item</th><th width="100px">Quantity</th><th width="50px">Price</th></tr>
+                @foreach (OrderLine myOrderLine in ViewBag.OrderLines)
+                {
+                    if (myOrderLine.orderID == myOrder.orderID)
+                    {
+                        string itemName = "";
+                        foreach (Item myItem in ViewBag.Items)
+                        {
+                            if (myItem.itemID == myOrderLine.itemID)
+                            {
+                                itemName = myItem.itemName;
+                                break;
+                            }
+                        }
+                        <tr><td>@itemName</td><td>@myOrderLine.quantity</td><td>€@(myOrderLine.price*myOrderLine.quantity)</td></tr>
+                    }
+                }
+                </table>
+            </div>
+            </div>
+        }
+    }
+</div>
+<div class="col-md-6">
+    <h3>Change Contact Details</h3>
+    <form method="post" @Url.Action("CustomerAccount","Home")>
+        <table>
+            <tr><td width="160px">Email</td><td><input type="text" value="@currentEmail" name="customerEmail" id="customerEmail"/></td></tr>
+            <tr><td>Address</td><td><input type="text" value="@currentAddress" name="customerAddress" id="customerAddress"/></td></tr>
+            <tr><td>Phone</td><td><input type="text" value="@currentPhone" name="customerPhone" id="customerPhone"/></td></tr>
+            <tr><td>Confirm Password</td><td><input type="password" name="customerPass" id="password"/></td></tr>
+            <tr><td></td><td><input type="number" value="@customerPoints" name="customerLoyaltyPoints" hidden readonly /></td></tr>
+            <tr><td></td><td><input type="submit" value="Submit" onclick="return performValidation('@currentPassword', '@currentEmail')"/> <input type="submit" value="Reset" onclick="return restoreDetails('@currentEmail','@currentAddress','@currentPhone')"/></td></tr>
+        </table>
+    </form>
+    <h3>Change Password</h3>
+    <form method="post" action="@Url.Action("ChangePassword","Home")">
+        <table>
+            <tr><td width="160px">Current Password</td><td><input type="password" name="currentPassword" id="currentPassword"/></td></tr>
+            <tr><td>New Password</td><td><input type="password" name="newPass1" id="newPass1"/></td></tr>
+            <tr><td>Confirm New Password</td><td><input type="password" name="newPass2" id="newPass2"/></td></tr>
+            <tr><td></td><td><input type="submit" value="Change Password" onclick="return performPasswordCheck('@currentPassword')"/></td></tr>
+        </table>
+    </form>
+</div>
