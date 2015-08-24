@@ -1,0 +1,1 @@
+Restaurant Management Software system designed using C#, ASP.Net MVC 5.0, Windows Phone 8, SQL, LINQ, jQuery, JavaScript, HTML and CSS for ITT Dublin H.Dip Project
